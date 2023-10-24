@@ -1,11 +1,14 @@
 const mongoose = require("mongoose");
-const app = require("./app");
-const { error } = require("./schema");
-const PORT = 3000;
-//YqCe05JnYw7Ci5zH
+const { connect } = require("mongoose");
+const { app } = require("./app");
+const path = require("path");
+const configPath = path.join(__dirname, ".env");
+require("dotenv").config({ path: configPath });
+
+const { PORT, DB_HOST } = process.env;
+
 mongoose
-  //.connect(DB_HOST)
-  .connect(process.env.DB_HOST)
+  .connect(DB_HOST)
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running. Use our API on port: ${PORT}`);
