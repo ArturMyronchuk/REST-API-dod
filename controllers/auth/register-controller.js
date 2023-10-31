@@ -3,8 +3,14 @@ const { HttpError } = require("../../helpers");
 const { ctrlWrapper } = require("../../decorators");
 const bcrypt = require("bcryptjs");
 
+const gravatar = require("gravatar");
+
+
+
 const register = async (req, res) => {
+ 
   const { email, password } = req.body;
+
   const user = await User.findOne({ email });
   if (user) {
     throw HttpError(409, `${email} in use`);
@@ -12,11 +18,24 @@ const register = async (req, res) => {
 
   const hashPassword = await bcrypt.hash(password, 10);
 
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const avatarURL = gravatar.url(email, {
+    protocol: "http",
+    d: "mp",
+    s: "200",
+  });
+
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL,
+  });
 
   res.status(201).json({
-    email: newUser.email,
-    subscription: newUser.subscription,
+    user: {
+      email: newUser.email,
+      subscription: newUser.subscription,
+      avatarURL,
+    },
   });
 };
 
