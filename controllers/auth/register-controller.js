@@ -1,14 +1,16 @@
 const { User } = require("../../models/mongoosSchemas");
-const { HttpError } = require("../../helpers");
+const { HttpError, sendemail } = require("../../helpers");
 const { ctrlWrapper } = require("../../decorators");
 const bcrypt = require("bcryptjs");
-
 const gravatar = require("gravatar");
+const { nanoid } = require("nanoid");
+const path = require("path");
+const configPath = path.join(__dirname, "..", "..", ".env");
+require("dotenv").config({ path: configPath });
 
-
+const { BASE_URL } = process.env;
 
 const register = async (req, res) => {
- 
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -17,6 +19,7 @@ const register = async (req, res) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
+  const verificationToken = nanoid();
 
   const avatarURL = gravatar.url(email, {
     protocol: "http",
@@ -28,7 +31,16 @@ const register = async (req, res) => {
     ...req.body,
     password: hashPassword,
     avatarURL,
+    verificationToken,
   });
+
+  const verifyEmail = {
+    to: email,
+    subject: "Verify email",
+    html: `<a target="blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click to verify email</a>`,
+  };
+
+  await sendemail(verifyEmail);
 
   res.status(201).json({
     user: {
