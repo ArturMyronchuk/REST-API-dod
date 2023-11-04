@@ -5,6 +5,8 @@ const Jimp = require("jimp");
 const gravatar = require("gravatar");
 
 const avatars = async (req, res) => {
+  //console.log(req.file);
+  //console.log(req.user);
   const { file, user } = req;
 
   if (!user) {

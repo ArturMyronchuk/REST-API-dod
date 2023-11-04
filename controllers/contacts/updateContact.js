@@ -2,7 +2,7 @@ const { Contact } = require("../../models/mongoosSchemas");
 const { HttpError } = require("../../helpers");
 const { ctrlWrapper } = require("../../decorators");
 
-const updateStatusContact = async (req, res) => {
+const updateContactById = async (req, res) => {
   const { id } = req.params;
   const { _id: owner } = req.user;
 
@@ -17,4 +17,4 @@ const updateStatusContact = async (req, res) => {
   res.json({ code: 200, message: "Success", data: contact });
 };
 
-module.exports = { updateStatusContact: ctrlWrapper(updateStatusContact) };
+module.exports = { updateContactById: ctrlWrapper(updateContactById) };
